@@ -58,4 +58,3 @@ Your program should be able to perform the following features:
 
 [Jest](https://jestjs.io/)
 
-## 🚀 Finished the challenge?
