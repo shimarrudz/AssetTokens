@@ -144,3 +144,47 @@ function buyTokensInBulk(user: User, token: Token, quantity: number): Transactio
     return reportString;
   }
   
+// Loop principal
+
+function main() {
+    const user = new User('João', 1000);
+    const token = createToken();
+  
+    let continueTransaction = true;
+    while (continueTransaction) {
+      console.log(`Saldo do usuário: R$ ${user.balance.toFixed(2)}`);
+      console.log(`Valor do token: R$ ${token.value.toFixed(2)}`);
+      console.log(`Quantidade disponível para compra: ${token.quantity}`);
+  
+      const action = prompt('O que você deseja fazer? (comprar / comprar lote / sair)');
+      switch (action) {
+        case 'comprar':
+          const quantityToBuy = parseInt(prompt('Quantos tokens você deseja comprar?'));
+          const report = buyTokens(user, token, quantityToBuy);
+          if (report) {
+            const transactionReport = generateTransactionReport(report);
+            console.log(transactionReport);
+            sendEmail(user.email, 'Relatório de Transação', transactionReport);
+          }
+          break;
+        case 'comprar lote':
+          const bulkQuantityToBuy = parseInt(prompt('Quantos tokens você deseja comprar em lote?'));
+          const bulkReport = buyTokensInBulk(user, token, bulkQuantityToBuy);
+          if (bulkReport) {
+            const transactionReport = generateTransactionReport(bulkReport);
+            console.log(transactionReport);
+            sendEmail(user.email, 'Relatório de Transação', transactionReport);
+          }
+          break;
+        case 'sair':
+          continueTransaction = false;
+          break;
+        default:
+          console.log('Opção inválida.');
+          break;
+      }
+    }
+  }
+  
+  main();
+  
