@@ -53,7 +53,7 @@ interface TransactionReport {
     // Implemente uma lógica para gerar uma quantidade inicial aleatória para o token
   }
   
-
+// Compra de tokens
 function buyTokens(user: User, token: Token, quantity: number): TransactionReport | null {
     const totalPrice = token.value * quantity;
 
@@ -91,7 +91,7 @@ function buyTokens(user: User, token: Token, quantity: number): TransactionRepor
 
 
 
-
+// Compra de tokens em lote
 function buyTokensInBulk(user: User, token: Token, quantity: number): TransactionReport | null {
     const totalPrice = token.value * quantity;
     const discount = calculateBulkDiscount(quantity, totalPrice);
@@ -128,3 +128,19 @@ function buyTokensInBulk(user: User, token: Token, quantity: number): Transactio
   }
   
 
+// Relatório de transação
+  function generateTransactionReport(report: TransactionReport): string {
+    const { user, token, quantity, totalPrice, discount } = report;
+  
+    const reportString = `
+      --- Relatório de Transação ---
+      Usuário: ${user.name}
+      Token: ${token.id}
+      Quantidade: ${quantity}
+      Valor Total: R$ ${totalPrice.toFixed(2)}
+      Desconto: R$ ${discount.toFixed(2)}
+    `;
+  
+    return reportString;
+  }
+  
