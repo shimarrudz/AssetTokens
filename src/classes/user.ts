@@ -1,6 +1,7 @@
 import { Token } from './token';
 import { TransactionReport } from './transactionReport';
 import { calculateDiscount } from './token';
+import { ERROR_MESSAGES } from '../constants/constants';
 
 export class User {
   name: string;
@@ -17,11 +18,11 @@ export class User {
     const totalPrice = token.value * quantity;
 
     if (this.balance < totalPrice) {
-      throw new Error('Saldo insuficiente para comprar os tokens.');
+      throw new Error(ERROR_MESSAGES.INSUFFICIENT_BALANCE);
     }
 
     if (token.quantity < quantity) {
-      throw new Error('Quantidade de tokens indisponível para compra.');
+      throw new Error(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
     }
 
     const discount = calculateDiscount(quantity);

@@ -1,7 +1,8 @@
-import { User } from './classes/user'
-import { Token, createToken, calculateDiscount } from './classes/token';
-import { TransactionReport, generateTransactionReport } from './classes/transactionReport';
+import { User } from './classes/user';
+import { createToken } from './classes/token';
+import { generateTransactionReport } from './classes/transactionReport';
 import { formatCurrency, getUserInput, getPositiveNumberInput, getQuantityToBuy } from './helpers/functions';
+import { ERROR_MESSAGES } from './constants/constants';
 
 function processTokenPurchase(user: User) {
   const token = createToken();
@@ -18,7 +19,7 @@ function processTokenPurchase(user: User) {
       console.log(transactionReport);
     }
   } catch (error: any) {
-    console.log(`Erro ao processar a compra: ${error.message}`);
+    console.log(`${ERROR_MESSAGES.ERROR_PROCESSING_PURCHASE} ${error.message}`);
   }
 }
 
@@ -30,7 +31,7 @@ function main() {
     userName = getUserInput('Digite seu nome:');
     initialBalance = getPositiveNumberInput('Digite seu saldo inicial:');
   } catch (error: any) {
-    console.log(`Erro ao obter informações do usuário: ${error.message}`);
+    console.log(`${ERROR_MESSAGES.ERROR_GETTING_USER_INFO} ${error.message}`);
     return;
   }
 
@@ -53,7 +54,7 @@ function main() {
           break;
 
         default:
-          console.log('Opção inválida. Tente novamente.');
+          console.log(ERROR_MESSAGES.INVALID_OPTION);
       }
     }
   }
