@@ -54,4 +54,40 @@ interface TransactionReport {
   }
   
 
-function buy
+function buyTokens(user: User, token: Token, quantity: number): TransactionReport | null {
+    const totalPrice = token.value * quantity;
+
+    if(user.balance < totalPrice) {
+        console.log("Saldo insuficiente para comprar os tokens.");
+        return null;
+    }
+
+    if (token.quantity < quantity) {
+        console.log("Quantidade de tokens indisponível para compra.")
+        return null;
+    }
+
+    const discount = calculateDiscount(quantity);
+    const discountedPrice = totalPrice - discount;
+    user.balance -= discountedPrice;
+    token.quantity -= quantity;
+    user.tokens.push(token);
+  
+    const report: TransactionReport = {
+      user,
+      token,
+      quantity,
+      totalPrice: discountedPrice,
+      discount,
+    };
+  
+    return report;
+  }
+  
+  function calculateDiscount(quantity: number): number {
+    // Implemente uma lógica para calcular o desconto com base na quantidade de tokens comprados
+    // Pode ser um desconto fixo ou variável
+}
+
+
+
