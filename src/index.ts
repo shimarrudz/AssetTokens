@@ -91,3 +91,40 @@ function buyTokens(user: User, token: Token, quantity: number): TransactionRepor
 
 
 
+
+function buyTokensInBulk(user: User, token: Token, quantity: number): TransactionReport | null {
+    const totalPrice = token.value * quantity;
+    const discount = calculateBulkDiscount(quantity, totalPrice);
+    const discountedPrice = totalPrice - discount;
+  
+    if (user.balance < discountedPrice) {
+      console.log('Saldo insuficiente para comprar os tokens em lote.');
+      return null;
+    }
+  
+    if (token.quantity < quantity) {
+      console.log('Quantidade de tokens indisponível para compra em lote.');
+      return null;
+    }
+  
+    user.balance -= discountedPrice;
+    token.quantity -= quantity;
+    user.tokens.push(token);
+  
+    const report: TransactionReport = {
+      user,
+      token,
+      quantity,
+      totalPrice: discountedPrice,
+      discount,
+    };
+  
+    return report;
+  }
+  
+  function calculateBulkDiscount(quantity: number, totalPrice: number): number {
+    // Implemente uma lógica para calcular o desconto com base na quantidade de tokens comprados em lote
+    // Pode ser um desconto fixo ou variável, dependendo do total de tokens e do preço total
+  }
+  
+
