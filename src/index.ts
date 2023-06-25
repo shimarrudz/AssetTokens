@@ -1,241 +1,209 @@
-import { v4 as uuidv4 } from 'node:uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 class Token {
-    id: string;
-    value: number;
-    quantity: number;
+  id: string;
+  value: number;
+  quantity: number;
 
-
-    constructor(id: string, value: number, quantity: number) {
-        this.id = id;
-        this.value = value;
-        this.quantity = quantity
-    }
-}
-
-class User {
-    name: string;
-    balance: number;
-    tokens: Token[];
-
-    constructor(name: string, initialBalance: number) {
-        this.name = name;
-        this.balance = initialBalance;
-        this.tokens = [];
-    }
+  constructor(id: string, value: number, quantity: number) {
+    this.id = id;
+    this.value = value;
+    this.quantity = quantity;
+  }
 }
 
 interface TransactionReport {
-    user: User;
-    token: Token;
-    quantity: number;
-    totalPrice: number;
-    discount: number;
+  user: User;
+  token: Token;
+  quantity: number;
+  totalPrice: number;
+  discount: number;
+}
+
+class User {
+  name: string;
+  balance: number;
+  tokens: Token[];
+
+  constructor(name: string, initialBalance: number) {
+    this.name = name;
+    this.balance = initialBalance;
+    this.tokens = [];
   }
 
-  
-  
-
-  function createToken(): Token {
-    const id = generateId();
-    const value = getRandomValue();
-    const quantity = getRandomQuantity();
-    return new Token(id, value, quantity);
-  }
-  
-  function generateId(): string {
-    return uuidv4();
-  }
-  
-  function getRandomValue(): number {
-    const maxValue = 100; // Valor máximo para os tokens
-    return Math.random() * maxValue;
-  }
-  
-  function getRandomQuantity(): number {
-    const maxQuantity = 100; // Quantidade máxima de tokens
-    return Math.floor(Math.random() * maxQuantity) + 1;
-  }
-  
-
-
-  
-// Compra de tokens
-function buyTokens(user: User, token: Token, quantity: number): TransactionReport | null {
+  buyTokens(token: Token, quantity: number): TransactionReport {
     const totalPrice = token.value * quantity;
 
-    if(user.balance < totalPrice) {
-        console.log("Saldo insuficiente para comprar os tokens.");
-        return null;
+    if (this.balance < totalPrice) {
+      throw new Error('Saldo insuficiente para comprar os tokens.');
     }
 
     if (token.quantity < quantity) {
-        console.log("Quantidade de tokens indisponível para compra.")
-        return null;
+      throw new Error('Quantidade de tokens indisponível para compra.');
     }
 
     const discount = calculateDiscount(quantity);
     const discountedPrice = totalPrice - discount;
-    user.balance -= discountedPrice;
+    this.balance -= discountedPrice;
     token.quantity -= quantity;
-    user.tokens.push(token);
-  
+    this.tokens.push(token);
+
     const report: TransactionReport = {
-      user,
+      user: this,
       token,
       quantity,
       totalPrice: discountedPrice,
       discount,
     };
-  
+
     return report;
   }
-  
-  function calculateDiscount(quantity: number): number {
-    const discountPerToken = 5; // Desconto por token comprado
-    return discountPerToken * quantity;
+}
+
+function createToken(): Token {
+  const id = generateId();
+  const value = getRandomValue();
+  const quantity = getRandomQuantity();
+  return new Token(id, value, quantity);
+}
+
+function generateId(): string {
+  return uuidv4();
+}
+
+function getRandomValue(): number {
+  const maxValue = 100;
+  return Math.random() * maxValue;
+}
+
+function getRandomQuantity(): number {
+  const maxQuantity = 100;
+  return Math.floor(Math.random() * maxQuantity) + 1;
+}
+
+function calculateDiscount(quantity: number): number {
+  const discountPerToken = 5;
+  return discountPerToken * quantity;
+}
+
+function generateTransactionReport(report: TransactionReport): string {
+  const { user, token, quantity, totalPrice, discount } = report;
+
+  const formattedTotalPrice = formatCurrency(totalPrice);
+  const formattedDiscount = formatCurrency(discount);
+
+  const reportString = `
+    --- Relatório de Transação ---
+    Usuário: ${user.name}
+    Token: ${token.id}
+    Quantidade: ${quantity}
+    Valor Total: ${formattedTotalPrice}
+    Desconto: ${formattedDiscount}
+  `;
+
+  return reportString;
+}
+
+function formatCurrency(value: number): string {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function getUserInput(message: string): string {
+  const input = prompt(message);
+  if (!input) {
+    throw new Error('Entrada inválida.');
   }
-  
+  return input;
+}
 
+function getPositiveNumberInput(message: string): number {
+  const input = getUserInput(message);
+  const parsedNumber = parseFloat(input);
 
+  if (isNaN(parsedNumber) || parsedNumber <= 0 || !Number.isFinite(parsedNumber)) {
+    throw new Error('Valor inválido. Digite um número positivo.');
+  }
 
-// Compra de tokens em lote
-function buyTokensInBulk(user: User, token: Token, quantity: number): TransactionReport | null {
-    const totalPrice = token.value * quantity;
-    const discount = calculateBulkDiscount(quantity, totalPrice);
-    const discountedPrice = totalPrice - discount;
-  
-    if (user.balance < discountedPrice) {
-      console.log('Saldo insuficiente para comprar os tokens em lote.');
-      return null;
+  return parsedNumber;
+}
+
+function getQuantityToBuy(token: Token): number {
+  let quantityToBuy: number | null = null;
+
+  while (quantityToBuy === null) {
+    const quantityInput = getUserInput('Quantos tokens você deseja comprar?');
+    const parsedQuantity = parseInt(quantityInput, 10);
+
+    if (isNaN(parsedQuantity) || parsedQuantity <= 0 || !Number.isFinite(parsedQuantity)) {
+      console.log('Quantidade inválida. A quantidade deve ser um número inteiro positivo. Tente novamente.');
+      continue;
     }
-  
-    if (token.quantity < quantity) {
-      console.log('Quantidade de tokens indisponível para compra em lote.');
-      return null;
+
+    if (parsedQuantity > token.quantity) {
+      console.log('Quantidade indisponível para compra. Tente novamente.');
+      continue;
     }
-  
-    user.balance -= discountedPrice;
-    token.quantity -= quantity;
-    user.tokens.push(token);
-  
-    const report: TransactionReport = {
-      user,
-      token,
-      quantity,
-      totalPrice: discountedPrice,
-      discount,
-    };
-  
-    return report;
-  }
-  
 
-
-// Desconto por lote
-function calculateBulkDiscount(quantity: number, totalPrice: number): number {
-    const discountPerToken = totalPrice * 0.1; // 10% de desconto por token
-    const discount = discountPerToken * quantity; // Desconto total para a quantidade de tokens comprados
-    return discount;
-  }
-  
-
-
-
-
-// Relatório de transação
-  function generateTransactionReport(report: TransactionReport): string {
-    const { user, token, quantity, totalPrice, discount } = report;
-  
-    const reportString = `
-      --- Relatório de Transação ---
-      Usuário: ${user.name}
-      Token: ${token.id}
-      Quantidade: ${quantity}
-      Valor Total: R$ ${totalPrice.toFixed(2)}
-      Desconto: R$ ${discount.toFixed(2)}
-    `;
-  
-    return reportString;
+    quantityToBuy = parsedQuantity;
   }
 
+  return quantityToBuy;
+}
 
-  
-// Loop principal
-function main(userName: string, initialBalance: number) {
+function processTokenPurchase(user: User) {
+  const token = createToken();
+  console.log(`Valor do token: ${formatCurrency(token.value)}`);
+  console.log(`Quantidade disponível para compra: ${token.quantity}`);
+
+  const quantityToBuy = getQuantityToBuy(token);
+
+  try {
+    const report = user.buyTokens(token, quantityToBuy);
+
+    if (report) {
+      const transactionReport = generateTransactionReport(report);
+      console.log(transactionReport);
+    }
+  } catch (error: any) {
+    console.log(`Erro ao processar a compra: ${error.message}`);
+  }
+}
+
+function main() {
+  let userName: string;
+  let initialBalance: number;
+
+  try {
+    userName = getUserInput('Digite seu nome:');
+    initialBalance = getPositiveNumberInput('Digite seu saldo inicial:');
+  } catch (error: any) {
+    console.log(`Erro ao obter informações do usuário: ${error.message}`);
+    return;
+  }
+
+  if (userName && initialBalance !== null) {
     const user = new User(userName, initialBalance);
     let continueTransaction = true;
-  
+
     while (continueTransaction) {
-      console.log(`Saldo do usuário: R$ ${user.balance.toFixed(2)}`);
-  
-      const action = prompt('O que você deseja fazer? (comprar / comprar lote / sair)') ?? '';
-  
+      console.log(`Saldo do usuário: ${formatCurrency(user.balance)}`);
+
+      const action = getUserInput('O que você deseja fazer? (comprar / sair)');
+
       switch (action) {
         case 'comprar':
-          const token = createToken();
-          console.log(`Valor do token: R$ ${token.value.toFixed(2)}`);
-          console.log(`Quantidade disponível para compra: ${token.quantity}`);
-  
-          const quantityToBuy = parseInt(prompt('Quantos tokens você deseja comprar?') ?? '0', 10);
-          const report = buyTokens(user, token, quantityToBuy);
-  
-          if (report) {
-            const transactionReport = generateTransactionReport(report);
-            console.log(transactionReport);
-          }
+          processTokenPurchase(user);
           break;
-  
-        case 'comprar lote':
-          const bulkToken = createToken();
-          console.log(`Valor do token: R$ ${bulkToken.value.toFixed(2)}`);
-          console.log(`Quantidade disponível para compra: ${bulkToken.quantity}`);
-  
-          const bulkQuantityToBuy = parseInt(prompt('Quantos tokens você deseja comprar em lote?') ?? '0', 10);
-          const bulkReport = buyTokensInBulk(user, bulkToken, bulkQuantityToBuy);
-  
-          if (bulkReport) {
-            const transactionReport = generateTransactionReport(bulkReport);
-            console.log(transactionReport);
-          }
-          break;
-  
+
         case 'sair':
           continueTransaction = false;
           break;
-  
+
         default:
-          console.log('Opção inválida.');
-          break;
+          console.log('Opção inválida. Tente novamente.');
       }
     }
   }
-  
-  
-// Cadastro de usuário
-function registerUser() {
-    const userName = prompt('Digite seu nome:');
-    if (userName === null) {
-      console.log('Nome inválido. Tente novamente.');
-      return;
-    }
-  
-    const initialBalanceInput = prompt('Digite seu saldo inicial:');
-    if (initialBalanceInput === null) {
-      console.log('Saldo inicial inválido. Tente novamente.');
-      return;
-    }
-  
-    const initialBalance = parseFloat(initialBalanceInput);
-    if (isNaN(initialBalance) || !Number.isFinite(initialBalance)) {
-      console.log('Saldo inicial inválido. Tente novamente.');
-      return;
-    }
-  
-    main(userName, initialBalance);
-  }
-  
-  registerUser();
-  
+}
 
-  
+main();
