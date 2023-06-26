@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import readline from 'readline';
 
 class Token {
   id: string;
@@ -108,16 +109,22 @@ function formatCurrency(value: number): string {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-function getUserInput(message: string): string {
-  const input = prompt(message);
-  if (!input) {
-    throw new Error('Entrada inválida.');
-  }
-  return input;
+async function getUserInput(question: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer);
+    });
+  });
 }
 
-function getPositiveNumberInput(message: string): number {
-  const input = getUserInput(message);
+async function getPositiveNumberInput(question: string): Promise<number> {
+  const input = await getUserInput(question);
   const parsedNumber = parseFloat(input);
 
   if (isNaN(parsedNumber) || parsedNumber <= 0 || !Number.isFinite(parsedNumber)) {
@@ -127,35 +134,37 @@ function getPositiveNumberInput(message: string): number {
   return parsedNumber;
 }
 
-function getQuantityToBuy(token: Token): number {
-  let quantityToBuy: number | null = null;
+function getQuantityToBuy(token: Token): Promise<number> {
+  return new Promise(async (resolve) => {
+    let quantityToBuy: number | null = null;
 
-  while (quantityToBuy === null) {
-    const quantityInput = getUserInput('Quantos tokens você deseja comprar?');
-    const parsedQuantity = parseInt(quantityInput, 10);
+    while (quantityToBuy === null) {
+      const quantityInput = await getUserInput('Quantos tokens você deseja comprar?');
+      const parsedQuantity = parseInt(quantityInput, 10);
 
-    if (isNaN(parsedQuantity) || parsedQuantity <= 0 || !Number.isFinite(parsedQuantity)) {
-      console.log('Quantidade inválida. A quantidade deve ser um número inteiro positivo. Tente novamente.');
-      continue;
+      if (isNaN(parsedQuantity) || parsedQuantity <= 0 || !Number.isFinite(parsedQuantity)) {
+        console.log('Quantidade inválida. A quantidade deve ser um número inteiro positivo. Tente novamente.');
+        continue;
+      }
+
+      if (parsedQuantity > token.quantity) {
+        console.log('Quantidade indisponível para compra. Tente novamente.');
+        continue;
+      }
+
+      quantityToBuy = parsedQuantity;
     }
 
-    if (parsedQuantity > token.quantity) {
-      console.log('Quantidade indisponível para compra. Tente novamente.');
-      continue;
-    }
-
-    quantityToBuy = parsedQuantity;
-  }
-
-  return quantityToBuy;
+    resolve(quantityToBuy);
+  });
 }
 
-function processTokenPurchase(user: User) {
+async function processTokenPurchase(user: User) {
   const token = createToken();
   console.log(`Valor do token: ${formatCurrency(token.value)}`);
   console.log(`Quantidade disponível para compra: ${token.quantity}`);
 
-  const quantityToBuy = getQuantityToBuy(token);
+  const quantityToBuy = await getQuantityToBuy(token);
 
   try {
     const report = user.buyTokens(token, quantityToBuy);
@@ -169,39 +178,37 @@ function processTokenPurchase(user: User) {
   }
 }
 
-function main() {
-  let userName: string;
-  let initialBalance: number;
+async function main() {
+  let user;
 
   try {
-    userName = getUserInput('Digite seu nome:');
-    initialBalance = getPositiveNumberInput('Digite seu saldo inicial:');
+    const userName = await getUserInput('Digite seu nome:');
+    const initialBalance = await getPositiveNumberInput('Digite seu saldo inicial:');
+    user = new User(userName, initialBalance);
   } catch (error: any) {
     console.log(`Erro ao obter informações do usuário: ${error.message}`);
     return;
   }
 
-  if (userName && initialBalance !== null) {
-    const user = new User(userName, initialBalance);
-    let continueTransaction = true;
+  while (true) {
+    console.log(`Saldo do usuário: ${formatCurrency(user.balance)}`);
+    console.log('--- Menu ---');
+    console.log('1. Comprar tokens');
+    console.log('2. Sair');
 
-    while (continueTransaction) {
-      console.log(`Saldo do usuário: ${formatCurrency(user.balance)}`);
+    try {
+      const option = await getPositiveNumberInput('Digite a opção desejada:');
 
-      const action = getUserInput('O que você deseja fazer? (comprar / sair)');
-
-      switch (action) {
-        case 'comprar':
-          processTokenPurchase(user);
-          break;
-
-        case 'sair':
-          continueTransaction = false;
-          break;
-
-        default:
-          console.log('Opção inválida. Tente novamente.');
+      if (option === 1) {
+        await processTokenPurchase(user);
+      } else if (option === 2) {
+        console.log('Saindo...');
+        break;
+      } else {
+        console.log('Opção inválida. Tente novamente.');
       }
+    } catch (error: any) {
+      console.log(`Erro: ${error.message}`);
     }
   }
 }
