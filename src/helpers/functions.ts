@@ -1,6 +1,8 @@
+import chalk from 'chalk';
 import { Token } from '../classes/token';
 import { ERROR_MESSAGES } from '../constants/constants';
 import readLine from 'readline';
+
 
 export function formatCurrency(value: number): string {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -31,7 +33,8 @@ export function getPositiveNumberInput(promptText: string): Promise<number> {
       readlineInterface.question(promptText, (input) => {
         const number = parseFloat(input);
         if (isNaN(number) || number < 0) {
-          throw new Error(ERROR_MESSAGES.INVALID_VALUE);
+          console.log(chalk.red('Valor inválido. Digite um número positivo.'));
+          prompt();
         } else {
           readlineInterface.close();
           resolve(number);
@@ -43,6 +46,7 @@ export function getPositiveNumberInput(promptText: string): Promise<number> {
   });
 }
 
+
 export function getQuantityToBuy(token: Token): Promise<number> {
   return new Promise(async (resolve) => {
     let quantityToBuy: number | null = null;
@@ -52,11 +56,13 @@ export function getQuantityToBuy(token: Token): Promise<number> {
       const parsedQuantity = parseInt(quantityInput, 10);
 
       if (isNaN(parsedQuantity) || parsedQuantity <= 0 || !Number.isFinite(parsedQuantity)) {
-        throw new Error(ERROR_MESSAGES.INVALID_QUANTITY);
+        console.log(chalk.red('Quantidade inválida. A quantidade deve ser um número inteiro positivo. Tente novamente.'));
+        continue;
       }
 
       if (parsedQuantity > token.quantity) {
-        throw new Error(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
+        console.log(chalk.red('Quantidade indisponível para compra. Tente novamente.'));
+        continue;
       }
 
       quantityToBuy = parsedQuantity;

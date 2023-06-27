@@ -21,11 +21,11 @@ export class User {
     const totalPrice = token.value * quantity * token.demand;
   
     if (this.balance < totalPrice) {
-      throw new Error(ERROR_MESSAGES.INSUFFICIENT_BALANCE);
+      console.log(ERROR_MESSAGES.INSUFFICIENT_BALANCE);
     }
   
     if (token.quantity < quantity) {
-      throw new Error(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
+      console.log(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
     }
   
     const discount = calculateDiscount(quantity);
@@ -54,12 +54,12 @@ export class User {
   
 
   sellTokens(token: Token, quantity: number): TransactionReport {
-    const userTokens = this.tokens.filter((t)=> token.id === token.id);
+    const userTokens = this.tokens.filter((t) => t.id === token.id);
     if (userTokens.length < quantity) {
-      throw new Error(ERROR_MESSAGES.UNAVAILABLE_QUANTITY)
+      console.log(ERROR_MESSAGES.UNAVAILABLE_QUANTITY)
     } 
 
-    const soldTokens = userTokens.slice(0, quantity);
+    const soldTokens = userTokens.slice(-quantity);
     this.tokens = this.tokens.filter((t) => !soldTokens.includes(t));
 
 

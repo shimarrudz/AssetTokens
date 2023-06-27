@@ -1,6 +1,6 @@
 import { User } from './user';
 import { Token } from './token';
-import { formatCurrency } from '../helpers/functions'
+import { formatCurrency } from '../helpers/functions';
 
 export interface TransactionReport {
   user: User;

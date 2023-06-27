@@ -21,7 +21,7 @@ async function processTokenPurchase(user: User) {
       console.log(transactionReport);
     }
   } catch (error: any) {
-    throw new Error(`${ERROR_MESSAGES.ERROR_PROCESSING_PURCHASE} ${error.message}`);
+    console.log(`${ERROR_MESSAGES.ERROR_PROCESSING_PURCHASE} ${error.message}`);
   }
 }
 
@@ -53,7 +53,7 @@ async function processTokenSale(user: User) {
   const quantityToSell = await getPositiveNumberInput('Digite a quantidade que deseja vender:');
 
   if (quantityToSell > token.quantity) {
-    throw new Error(ERROR_MESSAGES.INSUFFICIENT_BALANCE);
+    console.log(ERROR_MESSAGES.INSUFFICIENT_BALANCE);
   }
 
   const salePrice = token.value * quantityToSell * token.demand;
