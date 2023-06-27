@@ -19,13 +19,10 @@ export class Token {
     }
 
     simulateExternalFactors() {
-      // Gere um fator aleatório para simular variações
       const factor = Math.random() * (1.2 - 0.8) + 0.8;
   
-      // Ajuste o valor do token com base no fator
       this.value *= factor;
   
-      // Limite o valor máximo para evitar aumentos excessivos
       if (this.value > 100) {
         this.value = 100;
       }

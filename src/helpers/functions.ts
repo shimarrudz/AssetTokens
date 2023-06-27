@@ -2,9 +2,6 @@ import { Token } from '../classes/token';
 import { ERROR_MESSAGES } from '../constants/constants';
 import readLine from 'readline';
 
-// Adicionar tratamento de erros!!!!
-// Aplicar lei de oferta e demanda nos tokens!!!!
-
 export function formatCurrency(value: number): string {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -34,8 +31,7 @@ export function getPositiveNumberInput(promptText: string): Promise<number> {
       readlineInterface.question(promptText, (input) => {
         const number = parseFloat(input);
         if (isNaN(number) || number < 0) {
-          console.log('Valor inválido. Digite um número positivo.');
-          prompt();
+          throw new Error(ERROR_MESSAGES.INVALID_VALUE);
         } else {
           readlineInterface.close();
           resolve(number);
@@ -47,7 +43,6 @@ export function getPositiveNumberInput(promptText: string): Promise<number> {
   });
 }
 
-
 export function getQuantityToBuy(token: Token): Promise<number> {
   return new Promise(async (resolve) => {
     let quantityToBuy: number | null = null;
@@ -57,13 +52,11 @@ export function getQuantityToBuy(token: Token): Promise<number> {
       const parsedQuantity = parseInt(quantityInput, 10);
 
       if (isNaN(parsedQuantity) || parsedQuantity <= 0 || !Number.isFinite(parsedQuantity)) {
-        console.log('Quantidade inválida. A quantidade deve ser um número inteiro positivo. Tente novamente.');
-        continue;
+        throw new Error(ERROR_MESSAGES.INVALID_QUANTITY);
       }
 
       if (parsedQuantity > token.quantity) {
-        console.log('Quantidade indisponível para compra. Tente novamente.');
-        continue;
+        throw new Error(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
       }
 
       quantityToBuy = parsedQuantity;
