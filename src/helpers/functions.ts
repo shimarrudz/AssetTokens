@@ -23,16 +23,30 @@ export async function getUserInput(question: string): Promise<string> {
   });
 }
 
-export async function getPositiveNumberInput(question: string): Promise<number> {
-  const input = await getUserInput(question);
-  const parsedNumber = parseFloat(input);
+export function getPositiveNumberInput(promptText: string): Promise<number> {
+  return new Promise((resolve) => {
+    const readlineInterface = readLine.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
 
-  if (isNaN(parsedNumber) || parsedNumber <= 0 || !Number.isFinite(parsedNumber)) {
-    throw new Error('Valor inválido. Digite um número positivo.');
-  }
+    const prompt = () => {
+      readlineInterface.question(promptText, (input) => {
+        const number = parseFloat(input);
+        if (isNaN(number) || number < 0) {
+          console.log('Valor inválido. Digite um número positivo.');
+          prompt();
+        } else {
+          readlineInterface.close();
+          resolve(number);
+        }
+      });
+    };
 
-  return parsedNumber;
+    prompt();
+  });
 }
+
 
 export function getQuantityToBuy(token: Token): Promise<number> {
   return new Promise(async (resolve) => {

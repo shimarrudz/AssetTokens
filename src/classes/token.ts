@@ -12,7 +12,25 @@ export class Token {
     this.quantity = quantity;
     this.demand = demand;
   }
-}
+
+    calculateEquilibriumPrice(): number {
+      const equilibriumPrice = this.value * (1 + (1 / this.demand));
+      return equilibriumPrice;
+    }
+
+    simulateExternalFactors() {
+      // Gere um fator aleatório para simular variações
+      const factor = Math.random() * (1.2 - 0.8) + 0.8;
+  
+      // Ajuste o valor do token com base no fator
+      this.value *= factor;
+  
+      // Limite o valor máximo para evitar aumentos excessivos
+      if (this.value > 100) {
+        this.value = 100;
+      }
+    }
+  }
 
 export function createToken(): Token {
   const id = generateId();
@@ -37,7 +55,7 @@ function getRandomQuantity(): number {
 }
 
 function getRandomDemand(): number {
-  const maxDemand = 100;
+  const maxDemand = 20;
   return Math.floor(Math.random() * maxDemand) + 1;
 }
 
