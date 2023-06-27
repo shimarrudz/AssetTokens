@@ -4,12 +4,14 @@ import { generateTransactionReport } from './classes/transactionReport';
 import { formatCurrency, getUserInput, getPositiveNumberInput, getQuantityToBuy } from './helpers/functions';
 import { ERROR_MESSAGES } from './constants/constants';
 
-function processTokenPurchase(user: User) {
+//Fazer tratamento de erros!!!
+async function processTokenPurchase(user: User) {
   const token = createToken();
   console.log(`Valor do token: ${formatCurrency(token.value)}`);
   console.log(`Quantidade disponível para compra: ${token.quantity}`);
+  console.log(`Demanda atual do token: ${token.demand}`);
 
-  const quantityToBuy = getQuantityToBuy(token);
+  const quantityToBuy = await getQuantityToBuy(token);
 
   try {
     const report = user.buyTokens(token, quantityToBuy);
@@ -19,43 +21,41 @@ function processTokenPurchase(user: User) {
       console.log(transactionReport);
     }
   } catch (error: any) {
-    console.log(`${ERROR_MESSAGES.ERROR_PROCESSING_PURCHASE} ${error.message}`);
+    console.log(`Erro ao processar a compra: ${error.message}`);
   }
 }
 
-function main() {
-  let userName: string;
-  let initialBalance: number;
+async function main() {
+  let user;
 
   try {
-    userName = getUserInput('Digite seu nome:');
-    initialBalance = getPositiveNumberInput('Digite seu saldo inicial:');
+    const userName = await getUserInput('Digite seu nome:');
+    const initialBalance = await getPositiveNumberInput('Digite seu saldo inicial:');
+    user = new User(userName, initialBalance);
   } catch (error: any) {
-    console.log(`${ERROR_MESSAGES.ERROR_GETTING_USER_INFO} ${error.message}`);
+    console.log(`Erro ao obter informações do usuário: ${error.message}`);
     return;
   }
 
-  if (userName && initialBalance !== null) {
-    const user = new User(userName, initialBalance);
-    let continueTransaction = true;
+  while (true) {
+    console.log(`Saldo do usuário: ${formatCurrency(user.balance)}`);
+    console.log('--- Menu ---');
+    console.log('1. Comprar tokens');
+    console.log('2. Sair');
 
-    while (continueTransaction) {
-      console.log(`Saldo do usuário: ${formatCurrency(user.balance)}`);
+    try {
+      const option = await getPositiveNumberInput('Digite a opção desejada:');
 
-      const action = getUserInput('O que você deseja fazer? (comprar / sair)');
-
-      switch (action) {
-        case 'comprar':
-          processTokenPurchase(user);
-          break;
-
-        case 'sair':
-          continueTransaction = false;
-          break;
-
-        default:
-          console.log(ERROR_MESSAGES.INVALID_OPTION);
+      if (option === 1) {
+        await processTokenPurchase(user);
+      } else if (option === 2) {
+        console.log('Saindo...');
+        break;
+      } else {
+        console.log('Opção inválida. Tente novamente.');
       }
+    } catch (error: any) {
+      console.log(`Erro: ${error.message}`);
     }
   }
 }

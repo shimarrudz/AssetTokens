@@ -15,7 +15,7 @@ export class User {
   }
 
   buyTokens(token: Token, quantity: number): TransactionReport {
-    const totalPrice = token.value * quantity;
+    const totalPrice = token.value * quantity * token.demand;
 
     if (this.balance < totalPrice) {
       throw new Error(ERROR_MESSAGES.INSUFFICIENT_BALANCE);
