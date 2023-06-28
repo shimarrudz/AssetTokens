@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import { Token } from '../classes/token';
-import { ERROR_MESSAGES } from '../constants/constants';
 import readLine from 'readline';
 
 
