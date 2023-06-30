@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { Token } from '../classes/token';
-import readLine from 'readline';
+import readLine from 'node:readline';
 
 
 export function formatCurrency(value: number): string {
