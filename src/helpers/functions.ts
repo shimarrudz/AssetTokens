@@ -54,7 +54,9 @@ export function getQuantityToBuy(token: Token): Promise<number> {
       const quantityInput = await getUserInput('Quantos tokens você deseja comprar?');
       const parsedQuantity = parseInt(quantityInput, 10);
 
-      if (isNaN(parsedQuantity) || parsedQuantity <= 0 || !Number.isFinite(parsedQuantity)) {
+      const quantCheck = isNaN(parsedQuantity) || parsedQuantity <= 0 || !Number.isFinite(parsedQuantity)
+
+      if (quantCheck) {
         console.log(chalk.red('Quantidade inválida. A quantidade deve ser um número inteiro positivo. Tente novamente.'));
         continue;
       }
