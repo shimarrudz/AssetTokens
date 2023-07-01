@@ -41,8 +41,8 @@ async function processTokenSale(user: User) {
 
   while (true) {
     tokenIndex = await getPositiveNumberInput('Digite o índice do token que deseja vender:');
-
-    if (tokenIndex >= 0 && tokenIndex < user.tokens.length) {
+    const tokenIdx = tokenIndex >= 0 && tokenIndex < user.tokens.length
+    if (tokenIdx) {
       break;
     }
 

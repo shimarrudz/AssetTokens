@@ -31,7 +31,9 @@ export function getPositiveNumberInput(promptText: string): Promise<number> {
     const prompt = () => {
       readlineInterface.question(promptText, (input) => {
         const number = parseFloat(input);
-        if (isNaN(number) || number < 0) {
+        const nanOrNeg = isNaN(number) || number < 0
+        
+        if (nanOrNeg) {
           console.log(chalk.red('Valor inválido. Digite um número positivo.'));
           prompt();
         } else {
