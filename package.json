@@ -12,10 +12,12 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "collectCoverage": true,
-    "coverageReporters": ["lcov", "text"]
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ]
   },
   "scripts": {
-    
     "dev": "ts-node ./src/main.ts"
   }
 }

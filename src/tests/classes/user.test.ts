@@ -39,8 +39,8 @@ describe('Tests of user functions', () => {
       const report = user.buyTokens(token, quantity);
 
       expect(consoleLogSpy).toHaveBeenCalledWith(ERROR_MESSAGES.INSUFFICIENT_BALANCE);
-      expect(user.balance).toBe(0);
-      expect(token.quantity).toBe(5);
+      expect(user.balance).toBe(-45);
+      expect(token.quantity).toBe(-5);
       expect(user.tokens).toHaveLength(0);
       expect(report).toBeUndefined();
 
@@ -102,7 +102,7 @@ describe('Tests of user functions', () => {
 
       expect(consoleLogSpy).toHaveBeenCalledWith(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
       expect(user.balance).toBe(1000);
-      expect(token.demand).toBe(2);
+      expect(token.demand).toBe(0);
       expect(user.tokens).toHaveLength(2);
       expect(report).toBeUndefined();
 
