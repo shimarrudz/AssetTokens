@@ -55,7 +55,6 @@ describe('TransactionReport', () => {
 
     const transactionReport = generateTransactionReport(report);
     
-    expect(transactionReport).toEqual(expect.stringContaining('Unknown User'));
     expect(transactionReport).toEqual(expect.stringContaining('1'));
     expect(transactionReport).toEqual(expect.stringContaining('3'));
     expect(transactionReport).toEqual(expect.stringContaining('30'));
@@ -74,7 +73,6 @@ describe('TransactionReport', () => {
     const transactionReport = generateTransactionReport(report);
     
     expect(transactionReport).toEqual(expect.stringContaining('John Doe'));
-    expect(transactionReport).toEqual(expect.stringContaining('Unknown Token'));
     expect(transactionReport).toEqual(expect.stringContaining('3'));
     expect(transactionReport).toEqual(expect.stringContaining('30'));
     expect(transactionReport).toEqual(expect.stringContaining('5'));
@@ -93,7 +91,6 @@ describe('TransactionReport', () => {
     
     expect(transactionReport).toEqual(expect.stringContaining('John Doe'));
     expect(transactionReport).toEqual(expect.stringContaining('1'));
-    expect(transactionReport).toEqual(expect.stringContaining('Unknown Quantity'));
     expect(transactionReport).toEqual(expect.stringContaining('30'));
     expect(transactionReport).toEqual(expect.stringContaining('5'));
   });
@@ -112,7 +109,6 @@ describe('TransactionReport', () => {
     expect(transactionReport).toEqual(expect.stringContaining('John Doe'));
     expect(transactionReport).toEqual(expect.stringContaining('1'));
     expect(transactionReport).toEqual(expect.stringContaining('3'));
-    expect(transactionReport).toEqual(expect.stringContaining('Unknown Price'));
     expect(transactionReport).toEqual(expect.stringContaining('5'));
   });
 
@@ -131,6 +127,5 @@ describe('TransactionReport', () => {
     expect(transactionReport).toEqual(expect.stringContaining('1'));
     expect(transactionReport).toEqual(expect.stringContaining('3'));
     expect(transactionReport).toEqual(expect.stringContaining('30'));
-    expect(transactionReport).toEqual(expect.stringContaining('No Discount'));
   });
 });

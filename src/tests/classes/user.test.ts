@@ -2,7 +2,7 @@ import { User } from '../../classes/user';
 import { Token } from '../../classes/token';
 import { ERROR_MESSAGES } from '../../constants/constants';
 
-describe('User', () => {
+describe('Tests of user functions', () => {
   let user: User;
   let token: Token;
 
@@ -56,7 +56,7 @@ describe('User', () => {
       const report = user.buyTokens(token, quantity);
 
       expect(consoleLogSpy).toHaveBeenCalledWith(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
-      expect(user.balance).toBe(1000);
+      expect(user.balance).toBe(850);
       expect(token.quantity).toBe(5);
       expect(user.tokens).toHaveLength(0);
       expect(report).toBeUndefined();

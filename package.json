@@ -10,9 +10,12 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageReporters": ["lcov", "text"]
   },
   "scripts": {
+    
     "dev": "ts-node ./src/main.ts"
   }
 }
