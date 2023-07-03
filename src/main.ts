@@ -6,7 +6,6 @@ import { ERROR_MESSAGES } from './constants/constants';
 import chalk from 'chalk';
 import sgMail from '@sendgrid/mail';
 
-const SENDGRID_API_KEY = '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';
 sgMail.setApiKey(SENDGRID_API_KEY);
 
 async function sendEmail(to: string, subject: string, text: string): Promise<void> {
