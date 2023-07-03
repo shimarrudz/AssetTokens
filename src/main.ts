@@ -4,6 +4,26 @@ import { generateTransactionReport } from './classes/transactionReport';
 import { formatCurrency, getUserInput, getPositiveNumberInput, getQuantityToBuy } from './helpers/functions';
 import { ERROR_MESSAGES } from './constants/constants';
 import chalk from 'chalk';
+import sgMail from '@sendgrid/mail';
+
+const SENDGRID_API_KEY = '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';
+sgMail.setApiKey(SENDGRID_API_KEY);
+
+async function sendEmail(to: string, subject: string, text: string): Promise<void> {
+  const msg = {
+    to,
+    from: 'vic.shima.vss@gmail.com',
+    subject,
+    text,
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log('E-mail enviado com sucesso!');
+  } catch (error) {
+    console.error('Erro ao enviar o e-mail:', error);
+  }
+}
 
 async function processTokenPurchase(user: User) {
   const token = createToken();
@@ -19,11 +39,20 @@ async function processTokenPurchase(user: User) {
     if (report) {
       const transactionReport = generateTransactionReport(report);
       console.log(transactionReport);
+
+      const email = await getUserInput('Digite seu e-mail para receber o relatório:');
+
+      try {
+        await sendEmail(email, 'Relatório de Transação', transactionReport);
+      } catch (error: any) {
+        console.error('Erro ao enviar o e-mail:', error.message);
+      }
     }
   } catch (error: any) {
     console.log(`${ERROR_MESSAGES.ERROR_PROCESSING_PURCHASE} ${error.message}`);
   }
 }
+
 
 async function processTokenSale(user: User) {
   if (user.tokens.length === 0) {

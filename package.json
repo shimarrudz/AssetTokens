@@ -6,6 +6,7 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
     "uuid": "^9.0.0"
   },
   "jest": {
