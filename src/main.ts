@@ -1,17 +1,22 @@
+import chalk from 'chalk';
+import sgMail from '@sendgrid/mail';
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { User } from './classes/user';
 import { createToken } from './classes/token';
 import { generateTransactionReport } from './classes/transactionReport';
 import { formatCurrency, getUserInput, getPositiveNumberInput, getQuantityToBuy } from './helpers/functions';
 import { ERROR_MESSAGES } from './constants/constants';
-import chalk from 'chalk';
-import sgMail from '@sendgrid/mail';
 
+const SENDGRID_API_KEY = process.env.API_KEY || '';
 sgMail.setApiKey(SENDGRID_API_KEY);
 
 async function sendEmail(to: string, subject: string, text: string): Promise<void> {
+  const email = process.env.EMAIL2 || '';
   const msg = {
     to,
-    from: 'vic.shima.vss@gmail.com',
+    from: email,
     subject,
     text,
   };

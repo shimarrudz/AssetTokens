@@ -1,8 +1,10 @@
+import { MockedFunction } from 'jest-mock';
+
 import { TransactionReport, generateTransactionReport } from '../../classes/transactionReport';
 import { User } from '../../classes/user';
 import { Token } from '../../classes/token';
 
-describe('TransactionReport', () => {
+describe('Transaction Report', () => {
   let user: User;
   let token: Token;
 
@@ -16,17 +18,14 @@ describe('TransactionReport', () => {
       sellTokens: jest.fn()
     };
 
-    token = {
-      id: '1',
-      value: 10,
-      quantity: 5,
-      demand: 2,
-      calculateEquilibriumPrice: jest.fn(),
-      simulateExternalFactors: jest.fn()
-    };
+    beforeEach(() => {
+      token = new Token('1', 10, 5, 2);
+      token.calculateEquilibriumPrice = jest.fn() as MockedFunction<any>;
+      token.simulateExternalFactors = jest.fn() as MockedFunction<any>;
+    });
   });
 
-  test('should be able to return the formatted transaction report', () => {
+  it('should be able to return the formatted transaction report', () => {
     const report: TransactionReport = {
       user,
       token,
@@ -44,7 +43,7 @@ describe('TransactionReport', () => {
     expect(transactionReport).toEqual(expect.stringContaining('5'));
   });
 
-  test('should be able to handle missing user', () => {
+  it('should be able to handle missing user', () => {
     const report: TransactionReport = {
       user,
       token,
@@ -61,7 +60,7 @@ describe('TransactionReport', () => {
     expect(transactionReport).toEqual(expect.stringContaining('5'));
   });
 
-  test('should be able to handle missing token', () => {
+  it('should be able to handle missing token', () => {
     const report: TransactionReport = {
       user,
       token,
@@ -78,7 +77,7 @@ describe('TransactionReport', () => {
     expect(transactionReport).toEqual(expect.stringContaining('5'));
   });
 
-  test('should be able to handle missing quantity', () => {
+  it('should be able to handle missing quantity', () => {
     const report: TransactionReport = {
       user,
       token,
@@ -95,7 +94,7 @@ describe('TransactionReport', () => {
     expect(transactionReport).toEqual(expect.stringContaining('5'));
   });
 
-  test('should be able to handle missing totalPrice', () => {
+  it('should be able to handle missing totalPrice', () => {
     const report: TransactionReport = {
       user,
       token,
@@ -112,7 +111,7 @@ describe('TransactionReport', () => {
     expect(transactionReport).toEqual(expect.stringContaining('5'));
   });
 
-  test('should be able to handle missing discount', () => {
+  it('should be able to handle missing discount', () => {
     const report: TransactionReport = {
       user,
       token,

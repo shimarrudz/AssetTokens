@@ -1,10 +1,10 @@
-import { v4 as uuidv4 } from 'uuid';
+import { randomBytes } from 'node:crypto';
 
 export class Token {
-  id: string;
-  value: number;
-  quantity: number;
-  demand: number;
+   id: string;
+   value: number;
+   quantity: number;
+   demand: number;
 
   constructor(id: string, value: number, quantity: number, demand: number) {
     this.id = id;
@@ -13,21 +13,21 @@ export class Token {
     this.demand = demand;
   }
 
-    calculateEquilibriumPrice(): number {
-      const equilibriumPrice = this.value * (1 + (1 / this.demand));
-      return equilibriumPrice;
-    }
+  calculateEquilibriumPrice(): number {
+    const equilibriumPrice = this.value * (1 + 1 / this.demand);
+    return equilibriumPrice;
+  }
 
-    simulateExternalFactors() {
-      const factor = Math.random() * (1.2 - 0.8) + 0.8;
-  
-      this.value *= factor;
-  
-      if (this.value > 100) {
-        this.value = 100;
-      }
+  simulateExternalFactors() {
+    const factor = Math.random() * (1.2 - 0.8) + 0.8;
+
+    this.value *= factor;
+
+    if (this.value > 100) {
+      this.value = 100;
     }
   }
+}
 
 export function createToken(): Token {
   const id = generateId();
@@ -38,7 +38,8 @@ export function createToken(): Token {
 }
 
 function generateId(): string {
-  return uuidv4();
+  const idBytes = randomBytes(8);
+  return idBytes.toString('hex');
 }
 
 function getRandomValue(): number {

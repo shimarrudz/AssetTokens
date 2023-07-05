@@ -2,7 +2,7 @@ import { User } from '../../classes/user';
 import { Token } from '../../classes/token';
 import { ERROR_MESSAGES } from '../../constants/constants';
 
-describe('Tests of user functions', () => {
+describe('User functions', () => {
   let user: User;
   let token: Token;
 
@@ -12,7 +12,7 @@ describe('Tests of user functions', () => {
   });
 
   describe('buyTokens', () => {
-    test('should be able to purchase tokens and update user balance', () => {
+    it('should be able to purchase tokens and update user balance', () => {
       const initialBalance = user.balance;
       const initialTokenQuantity = token.quantity;
 
@@ -29,7 +29,7 @@ describe('Tests of user functions', () => {
       expect(report.discount).toBe(0);
     });
 
-    test('should be able to handle insufficient balance', () => {
+    it('should be able to handle insufficient balance', () => {
       const quantity = 3;
       user.balance = 0;
 
@@ -47,7 +47,7 @@ describe('Tests of user functions', () => {
       consoleLogSpy.mockRestore();
     });
 
-    test('should be able to handle unavailable token quantity', () => {
+    it('should be able to handle unavailable token quantity', () => {
       const quantity = 10;
 
       const consoleLogSpy = jest.spyOn(console, 'log');
@@ -57,6 +57,23 @@ describe('Tests of user functions', () => {
 
       expect(consoleLogSpy).toHaveBeenCalledWith(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
       expect(user.balance).toBe(850);
+      expect(token.quantity).toBe(5);
+      expect(user.tokens).toHaveLength(0);
+      expect(report).toBeUndefined();
+
+      consoleLogSpy.mockRestore();
+    });
+
+    it('should not be able allow negative quantity', () => {
+      const quantity = -2;
+
+      const consoleLogSpy = jest.spyOn(console, 'log');
+      consoleLogSpy.mockImplementation();
+
+      const report = user.buyTokens(token, quantity);
+
+      expect(consoleLogSpy).toHaveBeenCalledWith(ERROR_MESSAGES.INVALID_QUANTITY);
+      expect(user.balance).toBe(1000);
       expect(token.quantity).toBe(5);
       expect(user.tokens).toHaveLength(0);
       expect(report).toBeUndefined();
@@ -73,7 +90,7 @@ describe('Tests of user functions', () => {
       ];
     });
 
-    test('should be able to sell tokens and update user balance', () => {
+    it('should be able to sell tokens and update user balance', () => {
       const initialBalance = user.balance;
       const initialTokenDemand = token.demand;
 
@@ -92,7 +109,7 @@ describe('Tests of user functions', () => {
       expect(report.discount).toBe(0);
     });
 
-    test('should be able to handle unavailable token quantity', () => {
+    it('should be able to handle unavailable token quantity', () => {
       const quantity = 2;
 
       const consoleLogSpy = jest.spyOn(console, 'log');
@@ -103,6 +120,23 @@ describe('Tests of user functions', () => {
       expect(consoleLogSpy).toHaveBeenCalledWith(ERROR_MESSAGES.UNAVAILABLE_QUANTITY);
       expect(user.balance).toBe(1000);
       expect(token.demand).toBe(0);
+      expect(user.tokens).toHaveLength(2);
+      expect(report).toBeUndefined();
+
+      consoleLogSpy.mockRestore();
+    });
+
+    it('should not be able allow negative quantity', () => {
+      const quantity = -2;
+
+      const consoleLogSpy = jest.spyOn(console, 'log');
+      consoleLogSpy.mockImplementation();
+
+      const report = user.sellTokens(token, quantity);
+
+      expect(consoleLogSpy).toHaveBeenCalledWith(ERROR_MESSAGES.INVALID_QUANTITY);
+      expect(user.balance).toBe(1000);
+      expect(token.demand).toBe(2);
       expect(user.tokens).toHaveLength(2);
       expect(report).toBeUndefined();
 
