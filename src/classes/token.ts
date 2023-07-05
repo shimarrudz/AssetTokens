@@ -1,4 +1,9 @@
 import { randomBytes } from 'node:crypto';
+const DISCOUNT_PER_TOKEN = 5;
+const MAX_VALUE = 100;
+const MAX_DEMAND = 20;
+
+
 
 export class Token {
    id: string;
@@ -43,21 +48,18 @@ function generateId(): string {
 }
 
 function getRandomValue(): number {
-  const maxValue = 100;
-  return Math.random() * maxValue;
+
+  return Math.random() * MAX_VALUE;
 }
 
 function getRandomQuantity(): number {
-  const maxQuantity = 100;
-  return Math.floor(Math.random() * maxQuantity) + 1;
+  return Math.floor(Math.random() * MAX_VALUE) + 1;
 }
 
 function getRandomDemand(): number {
-  const maxDemand = 20;
-  return Math.floor(Math.random() * maxDemand) + 1;
+  return Math.floor(Math.random() * MAX_DEMAND) + 1;
 }
 
 export function calculateDiscount(quantity: number): number {
-  const discountPerToken = 5;
-  return discountPerToken * quantity;
+  return DISCOUNT_PER_TOKEN * quantity;
 }
