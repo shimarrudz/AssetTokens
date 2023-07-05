@@ -3,8 +3,6 @@ const DISCOUNT_PER_TOKEN = 5;
 const MAX_VALUE = 100;
 const MAX_DEMAND = 20;
 
-
-
 export class Token {
    id: string;
    value: number;
